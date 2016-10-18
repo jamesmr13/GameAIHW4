@@ -5,8 +5,8 @@ using System.Collections.Generic;
 public class Leader : MonoBehaviour {
 	// maximum values, will be set to a lower value than followers
 	// in order to allow followers to catch up if popped by blackbird
-	private float maxSpeed;
-    private float maxAcceleration;
+	private float maxSpeed = 3f;
+    private float maxAcceleration = 1.5f;
 	
 	// vectors to represent movement
 	public Vector3 angAcceleration;
@@ -33,7 +33,10 @@ public class Leader : MonoBehaviour {
     private float avoid_ratio = .8f;
     private float path_ratio = .2f;
     public Vector3 avoid_torque;
+    public Vector3 avoid_force;
     public Vector3 follow_torque;
+    public Vector3 follow_force;
+    public Rigidbody my_body;
 	
     // initialization
     void Start() {
@@ -59,8 +62,9 @@ public class Leader : MonoBehaviour {
     {
         while(true){
             Vector3 torque = new Vector3(0,0,0);
+            Vector3 force = new Vector3(0,0,0);
             
-            if(avoid_torque > .1f)
+            if(avoid_torque.magnitude > .1f)
             {
                 torque = (follow_torque * path_ratio + avoid_torque * avoid_ratio) * 100.0f * Time.deltaTime;
             }
@@ -72,6 +76,7 @@ public class Leader : MonoBehaviour {
             {
                 torque = torque.normalized * maxAcceleration;
             }
+            my_body.AddForce(follow_force);
             CheckSpeed();
             my_body.AddTorque(torque);
             yield return new WaitForEndOfFrame();
@@ -91,7 +96,7 @@ public class Leader : MonoBehaviour {
             this.Pursue (target_point);
             
             Vector3 dist_to_target = target_point.transform.position - this.transform.position;
-            if(dist_to_target < 1f)
+            if(dist_to_target.magnitude < 1f)
             {
                 curr_point++;
                 target_point = path[curr_point];
@@ -115,6 +120,7 @@ public class Leader : MonoBehaviour {
         Debug.DrawRay (transform.position, direction);
         
         follow_torque = torque * Time.deltaTime * 100.0f;
+        follow_force = Vector3.ClampMagnitude(transform.up * maxAcceleration, Mathf.Abs(maxAcceleration));
     }
     // avoid the obstacles
     protected IEnumerator avoid_obstacles()

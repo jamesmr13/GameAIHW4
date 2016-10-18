@@ -38,7 +38,7 @@ public class Follower : MonoBehaviour
         // at the beginning of each frame
         // leader has public variable so all the followers can see the list
         // of followers
-        int my_index = leader.GetComponent<Leader>().followers.FindIndex(gameObject);
+        int my_index = 0;//leader.GetComponent<Leader>().followers.FindIndex(gameObject);
         if(my_index == 0)
         {
             toPursue = leader;
