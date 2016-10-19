@@ -5,8 +5,8 @@ using System.Collections.Generic;
 public class Leader : MonoBehaviour {
 	// maximum values, will be set to a lower value than followers
 	// in order to allow followers to catch up if popped by blackbird
-	private float maxSpeed = 3f;
-    private float maxAcceleration = 1.5f;
+	private float maxSpeed = 0.1f;
+    private float maxAcceleration = 10f;
 	
 	// vectors to represent movement
 	public Vector3 angAcceleration;
@@ -30,8 +30,8 @@ public class Leader : MonoBehaviour {
     
     // cone checking
     public float cone_threshold;
-    private float avoid_ratio = .8f;
-    private float path_ratio = .2f;
+    private float avoid_ratio = 1f;
+    private float path_ratio = 0f;
     public Vector3 avoid_torque;
     public Vector3 avoid_force;
     public Vector3 follow_torque;
@@ -61,10 +61,10 @@ public class Leader : MonoBehaviour {
     protected IEnumerator master_move()
     {
         while(true){
+            my_body.AddForce(follow_force);
             Vector3 torque = new Vector3(0,0,0);
-            Vector3 force = new Vector3(0,0,0);
             
-            if(avoid_torque.magnitude > .1f)
+            if(avoid_torque.magnitude > 0f)
             {
                 torque = (follow_torque * path_ratio + avoid_torque * avoid_ratio) * 100.0f * Time.deltaTime;
             }
@@ -76,7 +76,6 @@ public class Leader : MonoBehaviour {
             {
                 torque = torque.normalized * maxAcceleration;
             }
-            my_body.AddForce(follow_force);
             CheckSpeed();
             my_body.AddTorque(torque);
             yield return new WaitForEndOfFrame();
@@ -96,7 +95,7 @@ public class Leader : MonoBehaviour {
             this.Pursue (target_point);
             
             Vector3 dist_to_target = target_point.transform.position - this.transform.position;
-            if(dist_to_target.magnitude < 1f)
+            if(dist_to_target.magnitude < 0.2f && curr_point < path.Length - 1)
             {
                 curr_point++;
                 target_point = path[curr_point];
@@ -108,19 +107,20 @@ public class Leader : MonoBehaviour {
     
     void Pursue(GameObject target)
     {
+        Vector3 dist_to_target = target.transform.position - this.transform.position;
         Vector3 direction = (target.transform.position - this.transform.position).normalized;
           
         Vector3 heading = Vector3.Cross(transform.up, direction);
         Vector3 torque = Vector3.Cross(transform.up, direction);
         
-        torque = torque.normalized * maxAcceleration;
+        torque = direction.normalized * maxAcceleration;
         
         torque = torque * Mathf.Lerp (0.7f, 1.0f, heading.magnitude - my_body.angularVelocity.magnitude);
         
         Debug.DrawRay (transform.position, direction);
         
         follow_torque = torque * Time.deltaTime * 100.0f;
-        follow_force = Vector3.ClampMagnitude(transform.up * maxAcceleration, Mathf.Abs(maxAcceleration));
+        follow_force = Vector3.ClampMagnitude(direction * maxAcceleration, Mathf.Abs(maxAcceleration));
     }
     // avoid the obstacles
     protected IEnumerator avoid_obstacles()
@@ -137,6 +137,7 @@ public class Leader : MonoBehaviour {
                 if(Vector3.Dot(transform.up, g.transform.position - transform.position) < cone_threshold)
                 {
                     center_of_mass = center_of_mass + g.transform.position;
+                    evading++;
                 }
             }
             

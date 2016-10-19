@@ -25,6 +25,9 @@ public class Follower : MonoBehaviour
     public Vector3 deltaPos;
     public Vector3 estimatedPos;
     public Vector3 direction;
+    public Rigidbody my_body;
+    public Vector3 follow_force;
+    public Vector3 follow_torque;
     
     
     void Start()
@@ -38,7 +41,8 @@ public class Follower : MonoBehaviour
         // at the beginning of each frame
         // leader has public variable so all the followers can see the list
         // of followers
-        int my_index = 0;//leader.GetComponent<Leader>().followers.FindIndex(gameObject);
+        //int my_index = leader.GetComponent<Leader>().followers.FindIndex(myself);
+        int my_index = 0;
         if(my_index == 0)
         {
             toPursue = leader;
@@ -58,7 +62,7 @@ public class Follower : MonoBehaviour
         }
         
         // finally we pursue the appropiate GameObject
-        currPos = toPursue.transform.position;
+        /*currPos = toPursue.transform.position;
         deltaPos = currPos - prevPos;
         
         direction = currPos - this.transform.position;
@@ -68,9 +72,9 @@ public class Follower : MonoBehaviour
         estimatedPos = currPos + deltaPos;
         float mySpeed;
         
-        if(dist_to_friend <= 0.5f)
+        if(dist_to_friend <= 2f)
         {
-            mySpeed = friend_speed;
+            mySpeed = toPursue.GetComponent<Rigidbody>().velocity.magnitude;
         }
         else
         {
@@ -79,6 +83,49 @@ public class Follower : MonoBehaviour
         }
         
         linearVelocity = mySpeed * direction.normalized;
-        transform.position = transform.position + linearVelocity * Time.deltaTime;
+        transform.position = transform.position + linearVelocity * Time.deltaTime;*/
+        this.Pursue(toPursue);
+        
+        my_body.AddForce(follow_force);
+        CheckSpeed();
+        //my_body.AddTorque(follow_torque);
+        transform.rotation = toPursue.transform.rotation;
+    }
+    
+    void Pursue(GameObject target)
+    {
+        Vector3 behind_target = target.GetComponent<Rigidbody>().velocity.normalized * -1;
+        Vector3 dist_to_target = (target.transform.position - this.transform.position) + behind_target * 0.5f;
+        Vector3 direction = dist_to_target.normalized;
+          
+        Vector3 heading = Vector3.Cross(transform.up, direction);
+        Vector3 torque = Vector3.Cross(transform.up, direction);
+        
+        torque = torque.normalized * maxAcceleration;
+        
+        torque = torque * Mathf.Lerp (0.7f, 1.0f, heading.magnitude - my_body.angularVelocity.magnitude);
+        
+        Debug.DrawRay (transform.position, direction);
+        
+        follow_torque = torque * Time.deltaTime * 100.0f;
+        follow_force = Vector3.ClampMagnitude(direction * maxAcceleration, Mathf.Abs(maxAcceleration));
+        
+        if(dist_to_target.magnitude < 1f)
+        {
+            follow_force = follow_force * dist_to_target.magnitude;
+        }
+        else if(dist_to_target.magnitude < 2f)
+        {
+            follow_force = follow_force / dist_to_target.magnitude;
+        }
+        
+    }
+    
+    protected void CheckSpeed()
+    {
+        if(my_body.velocity.magnitude > maxSpeed)
+        {
+            my_body.velocity = my_body.velocity.normalized * maxSpeed;
+        }
     }
 }

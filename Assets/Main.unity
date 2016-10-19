@@ -281,7 +281,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 36013754}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 0}
+  m_LocalPosition: {x: -2.6, y: -0.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -614,6 +614,8 @@ GameObject:
   m_Component:
   - 4: {fileID: 365510499}
   - 212: {fileID: 365510498}
+  - 114: {fileID: 365510500}
+  - 54: {fileID: 365510501}
   m_Layer: 0
   m_Name: Follower (1)
   m_TagString: Untagged
@@ -661,12 +663,55 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 365510497}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.866071, z: 0.047761917}
-  m_LocalScale: {x: 0.107170634, y: 0.06170432, z: 0}
+  m_LocalPosition: {x: 0.5, y: 4, z: 0.047761917}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
+--- !u!114 &365510500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 365510497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 479d46d46e337024790757bfaa3916d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSpeed: 0.25
+  maxAcceleration: 8
+  linearVelocity: {x: 0, y: 0, z: 0}
+  linearAcceleration: {x: 0, y: 0, z: 0}
+  angularVelocity: {x: 0, y: 0, z: 0}
+  angularAcceleration: {x: 0, y: 0, z: 0}
+  leader: {fileID: 520241574}
+  toPursue: {fileID: 0}
+  enemy: {fileID: 990788315}
+  currPos: {x: 0, y: 0, z: 0}
+  prevPos: {x: 0, y: 0, z: 0}
+  deltaPos: {x: 0, y: 0, z: 0}
+  estimatedPos: {x: 0, y: 0, z: 0}
+  direction: {x: 0, y: 0, z: 0}
+  my_body: {fileID: 365510501}
+  follow_force: {x: 0, y: 0, z: 0}
+  follow_torque: {x: 0, y: 0, z: 0}
+--- !u!54 &365510501
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 365510497}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &397927711
 GameObject:
   m_ObjectHideFlags: 0
@@ -738,7 +783,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 402467352}
   m_Layer: 0
-  m_Name: GameObject (4)
+  m_Name: Point5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1019,9 +1064,11 @@ MonoBehaviour:
   - {fileID: 2119352138}
   - {fileID: 1525672567}
   - {fileID: 36013754}
+  - {fileID: 402467351}
   curr_point: 0
   target_point: {fileID: 0}
-  followers: []
+  followers:
+  - {fileID: 365510497}
   cone_threshold: 0.2
   avoid_torque: {x: 0, y: 0, z: 0}
   avoid_force: {x: 0, y: 0, z: 0}
@@ -2018,7 +2065,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1525672567}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.9, y: -1, z: 0}
+  m_LocalPosition: {x: -5, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
