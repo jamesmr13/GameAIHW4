@@ -41,8 +41,8 @@ public class Follower : MonoBehaviour
         // at the beginning of each frame
         // leader has public variable so all the followers can see the list
         // of followers
-        //int my_index = leader.GetComponent<Leader>().followers.FindIndex(myself);
-        int my_index = 0;
+        int my_index = leader.GetComponent<Leader>().followers.IndexOf(this.gameObject);
+        //int my_index = 0;
         if(my_index == 0)
         {
             toPursue = leader;
@@ -62,28 +62,6 @@ public class Follower : MonoBehaviour
         }
         
         // finally we pursue the appropiate GameObject
-        /*currPos = toPursue.transform.position;
-        deltaPos = currPos - prevPos;
-        
-        direction = currPos - this.transform.position;
-        float dist_to_friend = direction.magnitude;
-        float friend_speed = deltaPos.magnitude;
-        
-        estimatedPos = currPos + deltaPos;
-        float mySpeed;
-        
-        if(dist_to_friend <= 2f)
-        {
-            mySpeed = toPursue.GetComponent<Rigidbody>().velocity.magnitude;
-        }
-        else
-        {
-            // we need to catch up
-            mySpeed = maxSpeed;
-        }
-        
-        linearVelocity = mySpeed * direction.normalized;
-        transform.position = transform.position + linearVelocity * Time.deltaTime;*/
         this.Pursue(toPursue);
         
         my_body.AddForce(follow_force);
@@ -116,7 +94,7 @@ public class Follower : MonoBehaviour
         }
         else if(dist_to_target.magnitude < 2f)
         {
-            follow_force = follow_force / dist_to_target.magnitude;
+            follow_force = follow_force / (dist_to_target.magnitude * 2);
         }
         
     }
